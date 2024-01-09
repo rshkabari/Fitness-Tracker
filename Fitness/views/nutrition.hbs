@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="/logo.png" type="punlic/png" sizes="32x32">
+    <title>Fitness Tracker</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-group">
+            <button id="sidebartoggle" class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <a href="/" class="logo-container">
+                <img src="/logo.png" alt="Fitness Tracker Logo" class="logo">
+                <span><b>FITNESS TRACKER</b></span>
+            </a>
+        </div>
+        <div class="search-container">
+            <input type="search" placeholder="Search" aria-label="Search">
+        </div>
+        <div class="profile-container">
+            <img src="/profile.png" alt="Profile Picture" class="profile-picture">
+        </div>
+    </header>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-section">
+            <a class="sidebar-item active" href="/">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            <a class="sidebar-item" href="/activities">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Activities</span>
+            </a>
+            <a class="sidebar-item" href="/nutrition">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Nutrition</span>
+            </a>
+            <a class="sidebar-item" href="/goals">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Goals</span>
+            </a>
+        </div>
+        <hr class="sidebar-separator">
+        <div class="sidebar-section">
+            <a class="sidebar-item" href="/progress">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Progress</span>
+            </a>
+            <a class="sidebar-item" href="/reports">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Reports</span>
+            </a>
+            <a class="sidebar-item" href="/profile">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Profile</span>
+            </a>
+            <a class="sidebar-item" href="/settings">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Settings</span>
+            </a>
+            <a class="sidebar-item" href="/logout">
+                <span class="icon-placeholder"></span>
+                <span the="sidebar-text">Logout</span>
+            </a>
+        </div>
+    </div>
+
+
+
+
+<script>
+document.getElementById('sidebartoggle').addEventListener('click', function() {
+    document.getElementById('sidebar').classList.toggle('active');
+});
+
+
+
+    // This function runs when the DOM is fully loaded.
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the current pathname of the URL.
+        var path = window.location.pathname;
+        // Select all sidebar items.
+        var items = document.querySelectorAll('.sidebar-item');
+        
+        // Remove the 'active' class from all items and add it to the current page's item.
+        items.forEach(function(item) {
+            // If the href of the sidebar item matches the current path, add the 'active' class.
+            if (item.getAttribute('href') === path) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

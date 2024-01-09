@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="/logo.png" type="punlic/png" sizes="32x32">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Fitness Tracker</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-group">
+            <button id="sidebartoggle" class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <a href="/" class="logo-container">
+                <img src="/logo.png" alt="Fitness Tracker Logo" class="logo">
+                <span><b>FITNESS TRACKER</b></span>
+            </a>
+        </div>
+        <div class="search-container">
+            <input type="search" placeholder="Search" aria-label="Search">
+        </div>
+        <div class="profile-container">
+            <img src="/profile.png" alt="Profile Picture" class="profile-picture">
+        </div>
+    </header>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-section">
+            <a class="sidebar-item active" href="/">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            <a class="sidebar-item" href="/activities">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Activities</span>
+            </a>
+            <a class="sidebar-item" href="/nutrition">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Nutrition</span>
+            </a>
+            <a class="sidebar-item" href="/goals">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Goals</span>
+            </a>
+        </div>
+        <hr class="sidebar-separator">
+        <div class="sidebar-section">
+            <a class="sidebar-item" href="/progress">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Progress</span>
+            </a>
+            <a class="sidebar-item" href="/reports">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Reports</span>
+            </a>
+            <a class="sidebar-item" href="/profile">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Profile</span>
+            </a>
+            <a class="sidebar-item" href="/settings">
+                <span class="icon-placeholder"></span>
+                <span class="sidebar-text">Settings</span>
+            </a>
+            <a class="sidebar-item" href="/logout">
+                <span class="icon-placeholder"></span>
+                <span the="sidebar-text">Logout</span>
+            </a>
+        </div>
+    </div>
+
+
+<div class="activities-page">
+  <h1 class="page-title">Your Activities</h1>
+
+<div id="graph-container" style="width: 800px; height: 400px; position: relative;">
+  <canvas id="dailyActivityChart"></canvas>
+</div>
+
+  <div class="log-activity-form">
+    <h2>Log New Activity</h2>
+    <form id="log-activity" action="/auth/activities" method="POST">
+      <label for="activity_name">Activity Type:</label>
+      <input type="text" id="activity_name" name="activity_name" required>
+
+      <label for="duration">Duration (in minutes):</label>
+      <input type="number" id="duration" name="duration" required>
+      <button type="submit">Log Activity</button>
+    </form>
+  </div>
+
+<div class="activity-logs">
+  <h2>Recent Activity</h2>
+  <table class="activities-table">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Duration</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each activities}}
+        <td>{{this.activity_name}}</td>
+        <td>{{this.duration}} minutes</td>
+        <td>{{this.date}}</td>
+      </tr>
+      {{else}}
+      <tr>
+        <td colspan="3">No recent activities.</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+</div>
+
+
+
+
+<script>
+document.getElementById('sidebartoggle').addEventListener('click', function() {
+    document.getElementById('sidebar').classList.toggle('active');
+});
+
+
+
+    // This function runs when the DOM is fully loaded.
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the current pathname of the URL.
+        var path = window.location.pathname;
+        // Select all sidebar items.
+        var items = document.querySelectorAll('.sidebar-item');
+        
+        // Remove the 'active' class from all items and add it to the current page's item.
+        items.forEach(function(item) {
+            // If the href of the sidebar item matches the current path, add the 'active' class.
+            if (item.getAttribute('href') === path) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    });
+
+
+        function fetchAndDisplayChart() {
+            fetch('/api/daily-activity')
+                .then(response => response.json())
+                .then(data => {
+                    const dailyGoal = 120; // Your daily goal in minutes
+                    const totalDuration = data.totalDuration || 0; // Ensure we have a number
+                    const remainingDuration = dailyGoal - totalDuration;
+                    const percentageComplete = (totalDuration / dailyGoal) * 100;
+
+                    const ctx = document.getElementById('dailyActivityChart').getContext('2d');
+                    const dailyActivityChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            datasets: [{
+                                data: [totalDuration, remainingDuration],
+                                backgroundColor: ['rgba(0, 173, 238, 1)', 'rgba(211, 211, 211, 0.25)'],
+                                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(211, 211, 211, 1)'],
+                                borderWidth: 1,
+                                cutout: '70%',
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: {
+                                animateScale: true
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    enabled: false
+                                }
+                            }
+                        },
+                        plugins: [{
+                            beforeDraw: function(chart) {
+                                let width = chart.width,
+                                    height = chart.height,
+                                    ctx = chart.ctx;
+                                     ctx.fillStyle = "#ffffff"; // Set font color to white
+                                ctx.restore();
+                                let fontSize = (height / 160).toFixed(2);
+                                ctx.font = fontSize + "em sans-serif";
+                                ctx.textBaseline = "middle";
+                                let text = `${percentageComplete.toFixed(0)}%`,
+                                    textX = Math.round((width - ctx.measureText(text).width) / 2),
+                                    textY = height / 2;
+                                ctx.fillText(text, textX, textY);
+                                ctx.save();
+                            }
+                        }]
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching activity data:', error);
+                });
+        }
+
+        // Call the function when the page loads
+        document.addEventListener('DOMContentLoaded', fetchAndDisplayChart);
+
+</script>
+
+</body>
+</html>
